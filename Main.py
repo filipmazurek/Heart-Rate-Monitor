@@ -13,7 +13,7 @@ class Main:
     if __name__ == "__main__":
         reader = Reader(data_filename, update_time_seconds, data_bit_length)  # instantiate Reader, pass in what file to read in
 
-        beatDetector = BeatDetector()
+        beatDetector = BeatDetector(update_time_seconds)
         processorHR = ProcessorHR()
         visualizer = Visualizer()
 

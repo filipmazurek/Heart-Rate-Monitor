@@ -3,7 +3,7 @@ import struct
 
 class Reader:
 
-    def __init__(self, filename, seconds_at_a_time, data_bit_length):
+    def __init__(self, filename, seconds_at_a_time=20, data_bit_length=16):  # default values given
         """ Initialize the Reader class. Calculate class variables based on data_bit_length for functions to know how
         much to read from the given document at a time. Sets the opened document as a class variable so it may be
         read from in later function calls.
@@ -14,15 +14,15 @@ class Reader:
         """
         self.data_bit_length = data_bit_length
         self.bytes_to_load = data_bit_length * 2 / 8
-        self.openedFile = open(filename, 'rb')
+        self.opened_file = open(filename, 'rb')
         binary_data = None
 
         if data_bit_length == 12:
-            binary_data = self.openedFile.read(3)
+            binary_data = self.opened_file.read(3)
         if data_bit_length == 16:
-            binary_data = self.openedFile.read(2)
+            binary_data = self.opened_file.read(2)
 
-        sample_rate_hz = struct.unpack('<H', binary_data)  # <H means little endian
+        sample_rate_hz = struct.unpack('<I', binary_data)  # < means little endian; I means unsigned int
         self.num_samples_to_get = (sample_rate_hz * seconds_at_a_time)[0]
 
     def get_next_data_instant(self):
@@ -37,7 +37,7 @@ class Reader:
         for numSample in range(0, self.num_samples_to_get):
             [ecg_data_point, ppg_data_point] = self.load_next_data_points()
 
-            if self.openedFile.closed:
+            if self.opened_file.closed:
                 break
 
             data_array_ecg.append(ecg_data_point)
@@ -51,13 +51,13 @@ class Reader:
 
         :return: one of each ECG and PPG data points
         """
-        binary_data = self.openedFile.read(self.bytes_to_load)
+        binary_data = self.opened_file.read(self.bytes_to_load)
 
         if binary_data == '':  # if EOF reached, close the file and exit.
-            self.openedFile.close()
+            self.opened_file.close()
             return [None, None]
 
-        joint_data = struct.unpack('<H', binary_data)[0]  # unpack always returns a tuple. Get the only data point.
+        joint_data = struct.unpack('<I', binary_data)[0]  # unpack always returns a tuple. Get the only data point.
         ppg_data_point = joint_data << self.data_bit_length
         ecg_data_point = (joint_data >> self.data_bit_length) << self.data_bit_length
 
@@ -68,4 +68,4 @@ class Reader:
 
         :return: boolean
         """
-        return self.openedFile.closed
+        return self.opened_file.closed

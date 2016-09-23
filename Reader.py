@@ -13,17 +13,20 @@ class Reader:
         :param data_bit_length: whether the multiplexed PPG and ECG values are 12 bit or 16 bit.
         """
         self.data_bit_length = data_bit_length
-        self.bytes_to_load = data_bit_length * 2 / 8
+        self.bytes_to_load = int(data_bit_length * 2 / 8)  # cast to integer becuase need integer when reading in
         self.opened_file = open(filename, 'rb')
-        binary_data = None
+        self.sample_rate_hz = 0
 
         if data_bit_length == 12:
             binary_data = self.opened_file.read(3)
+            self.sample_rate_hz = struct.unpack('<I', binary_data + '\0')[0]  # trick for 24 bit numbers
+            # http://stackoverflow.com/questions/3783677/how-to-read-integers-from-a-file-that-are-24bit-and-little-endian-using-python
         if data_bit_length == 16:
             binary_data = self.opened_file.read(2)
+            self.sample_rate_hz = struct.unpack('<H', binary_data)[0]  # < means little endian; H is 16 int
 
-        sample_rate_hz = struct.unpack('<I', binary_data)  # < means little endian; I means unsigned int
-        self.num_samples_to_get = (sample_rate_hz * seconds_at_a_time)[0]
+        self.num_samples_to_get = self.sample_rate_hz * seconds_at_a_time
+
 
     def get_next_data_instant(self):
         """ Read from the file the next seconds_at_a_time worth of data.
@@ -53,14 +56,21 @@ class Reader:
         """
         binary_data = self.opened_file.read(self.bytes_to_load)
 
-        if binary_data == '':  # if EOF reached, close the file and exit.
+        if not binary_data:  # if EOF reached, close the file and exit.
             self.opened_file.close()
             return [None, None]
 
-        joint_data = struct.unpack('<I', binary_data)[0]  # unpack always returns a tuple. Get the only data point.
-        ppg_data_point = joint_data << self.data_bit_length
-        ecg_data_point = (joint_data >> self.data_bit_length) << self.data_bit_length
+        ecg_data_point = None
+        ppg_data_point = None
 
+        if self.data_bit_length == 16:
+            ecg_data_binary = binary_data[:int(self.bytes_to_load / 2)]
+            ppg_data_binary = binary_data[-int(self.bytes_to_load / 2):]
+
+            ecg_data_point = struct.unpack('<H', ecg_data_binary)[0]
+            ppg_data_point = struct.unpack('<H', ppg_data_binary)[0]
+
+        # TODO: add statement for 12 bit uint
         return [ecg_data_point, ppg_data_point]
 
     def still_reading(self):
@@ -68,4 +78,8 @@ class Reader:
 
         :return: boolean
         """
-        return self.opened_file.closed
+        return not self.opened_file.closed
+
+    def get_sample_rate(self):
+        return self.sample_rate_hz
+

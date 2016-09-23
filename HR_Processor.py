@@ -1,0 +1,59 @@
+from queue import *
+from Main import hr_information_passer_class
+
+class HR_Processor:
+    tachycardia = 200
+    bradycardia = 40
+
+    def __init__(self, sampling_rate_hz):
+        samples_per_1_min = sampling_rate_hz * 60
+        samples_per_5_min = samples_per_1_min * 5
+        samples_per_10_min = samples_per_1_min * 10
+
+        self.one_min_queue = Queue(maxsize=samples_per_1_min)
+        self.five_min_queue = Queue(maxsize=samples_per_5_min)
+        self.ten_min_queue = Queue(maxsize=samples_per_10_min)
+
+    def add_inst_hr(self, inst_hr):
+        self.one_min_queue = self.update_queue(self.one_min_queue, inst_hr)
+        self.five_min_queue = self.update_queue(self.five_min_queue, inst_hr)
+        self.ten_min_queue = self.update_queue(self.ten_min_queue, inst_hr)
+
+        one_min_hr = self.queue_avg(self.five_min_queue)
+        five_min_hr = self.queue_avg(self.one_min_queue)
+
+        hr_information_passer = hr_information_passer_class(inst_hr, one_min_hr, five_min_hr)
+
+        hr_information_passer = self.check_for_alarm(hr_information_passer)
+
+        return hr_information_passer
+
+    def update_queue(self, queue, hr):
+        if queue.full():
+            queue.get()
+
+        queue.put(hr)
+        return queue
+
+    def queue_avg(self, queue):
+        queue_total = 0
+        queue_size = 0
+        while not queue.empty():
+            queue_total += queue.get()
+            queue_size += 1
+
+        queue_avg = queue_total / queue_size
+
+        return queue_avg
+
+    def check_for_alarm(self, hr, information_passer):
+        if hr < HR_Processor.bradycardia:
+            information_passer.add_ten_min_log(self.ten_min_queue)
+            information_passer.set_bradycardia_alarm()
+
+        if hr > HR_Processor.tachycardia:
+            information_passer.add_ten_min_log(self.ten_min_queue)
+            information_passer.set_tachycardia_alarm()
+
+        return information_passer
+

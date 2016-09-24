@@ -23,11 +23,14 @@ class Main:
         processorHR = HR_Processor(reader.get_sample_rate())
         # visualizer = Visualizer()
 
+        [data_array_ecg, data_array_ppg] = reader.get_next_data_instant()
+
         while reader.still_reading():
-            [data_array_ecg, data_array_ppg] = reader.get_next_data_instant()
             instant_hr = beatDetector.find_instant_hr(data_array_ecg, data_array_ppg)
+            print(instant_hr)
             visualization_info = processorHR.add_inst_hr(instant_hr)
             self.render_information_display(visualization_info)
+            [data_array_ecg, data_array_ppg] = reader.get_next_data_instant()
 
     def render_information_display(self, visualization_info):
         self.inst_hr_var = visualization_info.get_inst_hr()

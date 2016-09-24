@@ -25,7 +25,7 @@ class HR_Processor:
 
         hr_information_passer = InformationPasserClass(inst_hr, one_min_hr, five_min_hr)
 
-        hr_information_passer = self.check_for_alarm(hr_information_passer)
+        hr_information_passer = self.check_for_alarm(inst_hr, hr_information_passer)
 
         return hr_information_passer
 

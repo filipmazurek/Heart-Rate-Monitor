@@ -7,6 +7,9 @@ class Beat_Detector:
         self.update_time_seconds = update_time_seconds
 
     def find_instant_hr(self, data_array_ecg, data_array_ppg):
+
+
+
         inst_ecg_hr = self.single_array_hr(data_array_ecg)
         inst_ppg_hr = self. single_array_hr(data_array_ppg)
 

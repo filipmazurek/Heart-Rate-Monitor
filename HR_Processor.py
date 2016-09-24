@@ -1,5 +1,6 @@
 from queue import *
-from Main import hr_information_passer_class
+from Information_Passer import InformationPasserClass
+
 
 class HR_Processor:
     tachycardia = 200
@@ -22,7 +23,7 @@ class HR_Processor:
         one_min_hr = self.queue_avg(self.five_min_queue)
         five_min_hr = self.queue_avg(self.one_min_queue)
 
-        hr_information_passer = hr_information_passer_class(inst_hr, one_min_hr, five_min_hr)
+        hr_information_passer = InformationPasserClass(inst_hr, one_min_hr, five_min_hr)
 
         hr_information_passer = self.check_for_alarm(hr_information_passer)
 
@@ -36,13 +37,22 @@ class HR_Processor:
         return queue
 
     def queue_avg(self, queue):
+        helper_queue = Queue()
         queue_total = 0
         queue_size = 0
         while not queue.empty():
-            queue_total += queue.get()
+            temp_val = queue.get()
+            queue_total += temp_val
             queue_size += 1
+            helper_queue.put(temp_val)
 
         queue_avg = queue_total / queue_size
+
+        while not helper_queue.empty():
+            temp_val = helper_queue.get()
+            queue_total += temp_val
+            queue_size += 1
+            queue.put(temp_val)
 
         return queue_avg
 

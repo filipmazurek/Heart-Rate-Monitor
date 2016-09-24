@@ -1,7 +1,6 @@
 from Reader import Reader
-from BeatDetector import BeatDetector
-from ProcessorHR import ProcessorHR
-from Visualizer import Visualizer
+from Beat_Detector import Beat_Detector
+from HR_Processor import HR_Processor
 from tkinter import *
 
 root = Tk()  # global root in this case. Only way I know tkinter for now...
@@ -20,8 +19,8 @@ class Main:
 
     def run_hr_monitor(self):
         reader = Reader(self.data_filename, self.update_time_seconds, self.data_bit_length)
-        beatDetector = BeatDetector(self.update_time_seconds)
-        processorHR = ProcessorHR()
+        beatDetector = Beat_Detector(self.update_time_seconds)
+        processorHR = HR_Processor()
         # visualizer = Visualizer()
 
         while reader.still_reading():

@@ -8,8 +8,6 @@ class Beat_Detector:
 
     def find_instant_hr(self, data_array_ecg, data_array_ppg):
 
-
-
         inst_ecg_hr = self.single_array_hr(data_array_ecg)
         inst_ppg_hr = self. single_array_hr(data_array_ppg)
 
@@ -18,17 +16,11 @@ class Beat_Detector:
 
     def single_array_hr(self, data_array):
 
-        # normalized_data_array = self.normalize_array(data_array)
-
         num_beats = self.get_num_beats(data_array)
 
         bpm = num_beats / (self.update_time_seconds / 60)  # 60 seconds in a minute
 
         return bpm
-
-    # def normalize_array(self, some_array):
-    #     normalized_array = (some_array - np.min(some_array)) / np.ptp(some_array)
-    #     return normalized_array
 
     def get_num_beats(self, some_array):
         num_beats = 0

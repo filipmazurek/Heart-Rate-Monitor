@@ -6,8 +6,8 @@ class HR_Processor:
     tachycardia = 200
     bradycardia = 40
 
-    def __init__(self, sampling_rate_hz):
-        samples_per_1_min = sampling_rate_hz * 60
+    def __init__(self, update_time_seconds):
+        samples_per_1_min = int(60 / update_time_seconds)
         samples_per_5_min = samples_per_1_min * 5
         samples_per_10_min = samples_per_1_min * 10
 
@@ -20,8 +20,8 @@ class HR_Processor:
         self.five_min_queue = self.update_queue(self.five_min_queue, inst_hr)
         self.ten_min_queue = self.update_queue(self.ten_min_queue, inst_hr)
 
-        one_min_hr = self.queue_avg(self.five_min_queue)
-        five_min_hr = self.queue_avg(self.one_min_queue)
+        one_min_hr = self.queue_avg(self.one_min_queue)
+        five_min_hr = self.queue_avg(self.five_min_queue)
 
         hr_information_passer = InformationPasserClass(inst_hr, one_min_hr, five_min_hr)
 

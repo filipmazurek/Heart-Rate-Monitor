@@ -15,6 +15,9 @@ class HRProcessor:
         """
         self.time_passed_string = StringVar("")
 
+        self.tachycardia_maybe = False
+        self.bradycardia_maybe = False
+
         samples_per_1_min = int(60 / update_time_seconds)
         samples_per_5_min = samples_per_1_min * 5
         samples_per_10_min = samples_per_1_min * 10
@@ -85,21 +88,29 @@ class HRProcessor:
         return queue_avg
 
     def check_for_alarm(self, hr, information_passer):
-        """ Checks if the given heartrate is beyond normal values. Sets an alarm and writes out a log for inspection if
-        true.
+        """ Checks if the given heart rate is beyond normal values. Sets an alarm and writes out a log for inspection if
+        true. Have a safety check in place: heart rate must be in alarm range for at least two consecutive instants
+        before an alarm is raised.
 
         :param hr:
         :param information_passer:
         :return:
         """
         if hr < HRProcessor.bradycardia:
-            information_passer.set_bradycardia_alarm()
-            self.write_log("bradycardia")
+            if self.bradycardia_maybe:
+                information_passer.set_bradycardia_alarm()
+                self.write_log("bradycardia")
+            self.bradycardia_maybe = True
+        else:
+            self.bradycardia_maybe = False
 
         if hr > HRProcessor.tachycardia:
-            information_passer.add_ten_min_log(self.ten_min_queue)
-            information_passer.set_tachycardia_alarm()
-            self.write_log("tachycardia")
+            if self.tachycardia_maybe:
+                information_passer.set_tachycardia_alarm()
+                self.write_log("tachycardia")
+            self.tachycardia_maybe = True
+        else:
+            self.tachycardia_maybe = False
 
         return information_passer
 

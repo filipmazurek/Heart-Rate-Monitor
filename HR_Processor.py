@@ -2,7 +2,7 @@ from queue import *
 from Information_Passer import InformationPasserClass
 
 
-class HR_Processor:
+class HRProcessor:
     tachycardia = 200
     bradycardia = 40
 
@@ -57,11 +57,11 @@ class HR_Processor:
         return queue_avg
 
     def check_for_alarm(self, hr, information_passer):
-        if hr < HR_Processor.bradycardia:
+        if hr < HRProcessor.bradycardia:
             information_passer.add_ten_min_log(self.ten_min_queue)
             information_passer.set_bradycardia_alarm()
 
-        if hr > HR_Processor.tachycardia:
+        if hr > HRProcessor.tachycardia:
             information_passer.add_ten_min_log(self.ten_min_queue)
             information_passer.set_tachycardia_alarm()
 

@@ -1,6 +1,6 @@
 from Reader import Reader
-from Beat_Detector import Beat_Detector
-from HR_Processor import HR_Processor
+from Beat_Detector import BeatDetector
+from HR_Processor import HRProcessor
 from tkinter import *
 import time
 
@@ -41,8 +41,8 @@ class Main:
         Calls the method to destroy the display and finish running the script.
         """
         reader = Reader(self.data_filename, self.update_time_seconds, self.data_bit_length)
-        beat_detector = Beat_Detector(self.update_time_seconds)
-        processor_hr = HR_Processor(self.update_time_seconds)
+        beat_detector = BeatDetector(self.update_time_seconds)
+        processor_hr = HRProcessor(self.update_time_seconds)
 
         [data_array_ecg, data_array_ppg] = reader.get_next_data_instant()
         while reader.still_reading():

@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class Beat_Detector:
+class BeatDetector:
 
     def __init__(self, update_time_seconds):
         self.update_time_seconds = update_time_seconds
@@ -22,7 +22,8 @@ class Beat_Detector:
 
         return bpm
 
-    def get_num_beats(self, some_array):
+    @staticmethod
+    def get_num_beats(some_array):
         num_beats = 0
         threshold = (max(some_array) - np.mean(some_array)) / 2
 
@@ -32,11 +33,10 @@ class Beat_Detector:
 
         return num_beats
 
-    def reconcile_hr(self, hr_one, hr_two):
+    @staticmethod
+    def reconcile_hr(hr_one, hr_two):
         if abs(hr_one - hr_two) > 3:
             return hr_one
 
         else:
             return (hr_one + hr_two) / 2
-
-        # TODO: make actual good reconciliation. Not this lazy implementation.

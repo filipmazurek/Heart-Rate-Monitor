@@ -63,14 +63,17 @@ class Reader:
         ecg_data_point = None
         ppg_data_point = None
 
-        if self.data_bit_length == 16:
-            ecg_data_binary = binary_data[:int(self.bytes_to_load / 2)]
-            ppg_data_binary = binary_data[-int(self.bytes_to_load / 2):]
+        ecg_data_binary = binary_data[:int(self.bytes_to_load / 2)]
+        ppg_data_binary = binary_data[-int(self.bytes_to_load / 2):]
 
+        if self.data_bit_length == 16:
             ecg_data_point = struct.unpack('<H', ecg_data_binary)[0]
             ppg_data_point = struct.unpack('<H', ppg_data_binary)[0]
 
-        # TODO: add statement for 12 bit uint
+        if self.data_bit_length == 12:
+            ecg_data_point = struct.unpack('<H', ecg_data_binary + '\0')[0]
+            ppg_data_point = struct.unpack('<H', ppg_data_binary + '\0')[0]
+
         return [ecg_data_point, ppg_data_point]
 
     def still_reading(self):

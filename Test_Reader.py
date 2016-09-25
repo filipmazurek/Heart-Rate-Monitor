@@ -37,15 +37,16 @@ def test_get_sample_rate():
     my_reader = Reader(filename)  # opens up a new instance of the Reader
     assert my_reader.get_sample_rate() == rate
 
-    def test_still_reading():
-        filename = '60bpm16uintTest.bin'  # test file made using MATLAB. 16 uint, 40 sec of data
-        my_reader = Reader(filename, seconds_at_a_time, 16)  # opens up a new instance of the Reader
 
-        assert my_reader.still_reading() == True
+def test_still_reading():
+    filename = '60bpm16uintTest.bin'  # test file made using MATLAB. 16 uint, 40 sec of data
+    my_reader = Reader(filename, seconds_at_a_time, 16)  # opens up a new instance of the Reader
 
-        for i in range(0, int(seconds / seconds_at_a_time)):  # read through all data points
-            my_reader.get_next_data_instant()
-        assert my_reader.still_reading() == True
+    assert my_reader.still_reading() == True
 
-        my_reader.load_next_data_points()  # try to read the next information bit
-        assert my_reader.still_reading() == False
+    for i in range(0, int(seconds / seconds_at_a_time)):  # read through all data points
+         my_reader.get_next_data_instant()
+    assert my_reader.still_reading() == True
+
+    my_reader.load_next_data_points()  # try to read the next information bit
+    assert my_reader.still_reading() == False

@@ -71,6 +71,11 @@ class BeatDetector:
 
     @staticmethod
     def safe_mean(array):
+        """ Finds the mean of an array by ignoring any NaN values, just by skipping over them.
+
+        :param array:
+        :return: mean that doesn't include NaN
+        """
         total_items = 0
         total_value = 0
         for i in range(0, len(array)):
@@ -81,6 +86,12 @@ class BeatDetector:
 
     @staticmethod
     def find_next_value(array, item_num):
+        """ Find the next value in the array that is not a NaN.
+
+        :param array:
+        :param item_num: where to start looking in the array
+        :return:
+        """
         item_num += 1
         while item_num < len(array):
             if not math.isnan(array[item_num]):

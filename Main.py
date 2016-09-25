@@ -47,7 +47,7 @@ class Main:
         [data_array_ecg, data_array_ppg] = reader.get_next_data_instant()
         while reader.still_reading():
             instant_hr = beat_detector.find_instant_hr(data_array_ecg, data_array_ppg)
-            visualization_info = processor_hr.add_inst_hr(instant_hr)
+            visualization_info = processor_hr.add_inst_hr(instant_hr, self.time_passed_string)
             self.render_information_display(visualization_info)
             [data_array_ecg, data_array_ppg] = reader.get_next_data_instant()
             time.sleep(self.seconds_between_readings)

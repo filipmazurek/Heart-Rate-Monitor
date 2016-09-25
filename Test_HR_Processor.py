@@ -4,8 +4,6 @@ from queue import *
 sampling_rate_easy = 2/60  # makes be 2 inst hr per 1 min, 10 inst per 5 min
 
 
-
-
 def test_queue_avg():
     queue_avg_5 = Queue()
     queue_avg_5.put(0)
@@ -16,6 +14,7 @@ def test_queue_avg():
     assert 0 == queue_avg_5.get()
     assert 10 == queue_avg_5.get()
     assert  queue_avg_5.empty()
+
 
 def test_update_queue():
     putter = 4

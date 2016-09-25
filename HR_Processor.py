@@ -1,5 +1,6 @@
 from queue import *
 from Information_Passer import InformationPasserClass
+from tkinter import StringVar
 
 
 class HRProcessor:
@@ -12,7 +13,7 @@ class HRProcessor:
 
         :param update_time_seconds:
         """
-        self.time_passed_string = ""
+        self.time_passed_string = StringVar("")
 
         samples_per_1_min = int(60 / update_time_seconds)
         samples_per_5_min = samples_per_1_min * 5
@@ -109,7 +110,7 @@ class HRProcessor:
         :param type_alarm:
         :return:
         """
-        log_name = type_alarm + "_near_time_" + self.time_passed_string
+        log_name = type_alarm + "_near_time_" + self.time_passed_string.get()
         new_file = open(log_name, 'w')
         helper_queue = Queue()
 

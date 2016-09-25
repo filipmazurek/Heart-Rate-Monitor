@@ -64,6 +64,14 @@ class Main:
         self.inst_hr_var.set(int(visualization_info.get_inst_hr()))
         self.one_min_hr_var.set(int(visualization_info.get_one_min_hr()))
         self.five_min_hr_var.set(int(visualization_info.get_five_min_hr()))
+        if visualization_info.get_bradycardia_alarm():
+            self.alarm_var.set("Bradycardia!!")
+        elif visualization_info.get_tachycardia_alarm():
+            self.alarm_var.set("Tachycardia!!")
+        else:
+            self.alarm_var.set("")
+
+
 
         self.time_passed += self.update_time_seconds
         m, s = divmod(self.time_passed, 60)

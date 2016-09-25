@@ -45,7 +45,7 @@ def test_still_reading():
     assert my_reader.still_reading() == True
 
     for i in range(0, int(seconds / seconds_at_a_time)):  # read through all data points
-         my_reader.get_next_data_instant()
+        my_reader.get_next_data_instant()
     assert my_reader.still_reading() == True
 
     my_reader.load_next_data_points()  # try to read the next information bit

@@ -12,22 +12,18 @@ class Main:
     """ Initializer method for main. Creates the necessary parameters for other functions to access. Creates the
     StringVars that are later used to display data to the tkinter screen.
     """
-    def __init__(self, filename_new="HRTester.bin", seconds_at_a_time_new=20,
-                 seconds_between_display_new=1, data_bit_length_new=16):
-        self.time_passed = 0
+    def __init__(self, filename_new):
         if filename == "":
             filename_new = "HRTester.bin"
         self.data_filename = filename_new
-        if seconds_at_a_time_new == "":
-            seconds_at_a_time_new = 20
-        self.update_time_seconds = int(seconds_at_a_time_new)  # read in this much data at a time
-        if seconds_between_display_new == "":
-            seconds_between_display_new = 1
-        self.seconds_between_readings = float(seconds_between_display_new)  # time between display updates.
-        if data_bit_length_new == "":
-            data_bit_length_new = 16
-        self.data_bit_length = int(data_bit_length_new)  # length of each information point. Can be 12 or 16
 
+        # user changable parameters
+        self.update_time_seconds = 20  # read in this much data at a time
+        self.seconds_between_readings = 1  # time between display updates.
+        self.data_bit_length = 16  # length of each information point. Can be 12 or 16
+        # end user changable parameters
+
+        self.time_passed = 0
         self.inst_hr_var = StringVar("")
         self.one_min_hr_var = StringVar("")
         self.five_min_hr_var = StringVar("")
@@ -122,8 +118,5 @@ class Main:
 
 if __name__ == "__main__":
     filename = input("Please enter the binary file name: ")
-    seconds_at_a_time = input("How many seconds of data will be read at a time? : ")
-    seconds_between_display = input("How many seconds to wait between displaying data? : ")
-    data_bit_length = input("Is the data 12 or 16-bit? Enter '12' or '16' only: ")
-    myMain = Main(filename, seconds_at_a_time, seconds_between_display, data_bit_length)
+    myMain = Main(filename)
     myMain.setup_tkinter()

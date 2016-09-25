@@ -18,7 +18,7 @@ class Main:
         self.data_filename = filename_new
 
         # user changable parameters
-        self.update_time_seconds = 20  # read in this much data at a time
+        self.update_time_seconds = 10  # read in this much data at a time
         self.seconds_between_readings = 1  # time between display updates.
         self.data_bit_length = 16  # length of each information point. Can be 12 or 16
         # end user changable parameters
@@ -66,8 +66,6 @@ class Main:
             self.alarm_var.set("Tachycardia!!")
         else:
             self.alarm_var.set("")
-
-
 
         self.time_passed += self.update_time_seconds
         m, s = divmod(self.time_passed, 60)

@@ -1,4 +1,4 @@
-import numpy as np
+import math
 
 
 class BeatDetector:
@@ -37,19 +37,21 @@ class BeatDetector:
 
         return bpm
 
-    @staticmethod
-    def get_num_beats(some_array):
+    def get_num_beats(self, some_array):
         """ The actual calculation part of the class: counts how many upbeats occur in the given data.
 
         :param some_array:
         :return: beats per minute
         """
         num_beats = 0
-        threshold = (max(some_array) - np.mean(some_array)) / 2
+        threshold = (max(some_array) - self.safe_mean(some_array)) / 2
 
         for i in range(0, len(some_array) - 1):
-            if (some_array[i] < threshold) and (some_array[i+1] > threshold):
-                num_beats += 1
+            if not math.isnan(some_array[i]):
+                next_val = self.find_next_value(some_array, i)
+                if next_val >= 0 and\
+                        (some_array[i] < threshold) and (next_val > threshold):
+                    num_beats += 1
 
         return num_beats
 
@@ -66,3 +68,21 @@ class BeatDetector:
 
         else:
             return (hr_one + hr_two) / 2
+
+    @staticmethod
+    def safe_mean(array):
+        total_items = 0
+        total_value = 0
+        for i in range(0, len(array)):
+            if not math.isnan(i):
+                total_items += 1
+                total_value += array[i]
+        return total_value / total_items
+
+    @staticmethod
+    def find_next_value(array, item_num):
+        item_num += 1
+        while item_num < len(array):
+            if not math.isnan(array[item_num]):
+                return array[item_num]
+        return -1

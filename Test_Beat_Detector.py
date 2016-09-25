@@ -9,9 +9,11 @@ def test_get_num_beats():
     beat_detector = BeatDetector(update_time_seconds)
     assert 2 == beat_detector.get_num_beats(array_easy)
 
+
 def test_single_array_hr():
     beat_detector = BeatDetector(update_time_easy)
     assert 60 == beat_detector.single_array_hr(array_easy)  # 2 beats in 2 seconds means 60 bpm
+
 
 def test_find_inst_hr():
     beat_detector = BeatDetector(update_time_easy)

@@ -13,8 +13,6 @@ class Main:
     StringVars that are later used to display data to the tkinter screen.
     """
     def __init__(self, filename_new):
-        if filename == "":
-            filename_new = "HRTester.bin"
         self.data_filename = filename_new
 
         # user changable parameters

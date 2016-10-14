@@ -1,0 +1,3 @@
+[submodule "submodule_test"]
+	path = submodule_test
+	url = http://gitlab.oit.duke.edu/medical-device-software-design/submodule_test.git

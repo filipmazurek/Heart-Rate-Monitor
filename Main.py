@@ -17,6 +17,8 @@ class Main:
         args = self.parse_arguments()
 
         self.data_filename = args.data_filename
+        self.tachycardia = args.tachycardia
+        self.bradycardia = args.bradycardia
 
         # user changable parameters
         self.update_time_seconds = 10  # read in this much data at a time
@@ -43,6 +45,19 @@ class Main:
                          help='filename of binary data',
                          type=str,
                          default='test.bin')
+
+        par.add_argument('--tachycardia',
+                         dest='tachycardia',
+                         help='threshold for tachycardia',
+                         type=float,
+                         default='200.0')
+
+        par.add_argument('--bradycardia',
+                         dest='bradycardia',
+                         help='threshold for bradycardia',
+                         type=float,
+                         default='40.0')
+
         args = par.parse_args()
 
         return args
@@ -55,7 +70,7 @@ class Main:
         """
         reader = Reader(self.data_filename, self.update_time_seconds, self.data_bit_length)
         beat_detector = BeatDetector(self.update_time_seconds)
-        processor_hr = HRProcessor(self.update_time_seconds)
+        processor_hr = HRProcessor(self.update_time_seconds, self.tachycardia, self.bradycardia)
 
         [data_array_ecg, data_array_ppg] = reader.get_next_data_instant()
         while reader.still_reading():
@@ -110,8 +125,8 @@ class Main:
         """
         Label(root, text="Instant HR: ").grid(row=0, column=0)
         Label(root, text="One Min HR: ").grid(row=1, column=0)
-        Label(root,  text="Five Min HR: ").grid(row=2, column=0)
-        Label(root,  text="Alarm: ").grid(row=3, column=0)
+        Label(root, text="Five Min HR: ").grid(row=2, column=0)
+        Label(root, text="Alarm: ").grid(row=3, column=0)
         Label(root, text="Time Passed: ").grid(row=4, column=0)
 
         Label(root, textvariable=self.inst_hr_var).grid(row=0, column=1)

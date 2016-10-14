@@ -4,15 +4,17 @@ from tkinter import StringVar
 
 
 class HRProcessor:
-    tachycardia = 200  # selected values for tachycardia and bradycardia
-    bradycardia = 40
 
-    def __init__(self, update_time_seconds):
+    def __init__(self, update_time_seconds, tachycardia, bradycardia):
         """ Initialize an instance of the HRProcessor class with the time per given instant hr, so that can find how
         many values should be stored in the queue for 1, 5, and 10 minutes.
 
         :param update_time_seconds:
         """
+
+        self.tachycardia = tachycardia
+        self.bradycardia = bradycardia
+
         self.time_passed_string = StringVar("")
 
         self.tachycardia_maybe = False
@@ -96,7 +98,7 @@ class HRProcessor:
         :param information_passer:
         :return:
         """
-        if hr < HRProcessor.bradycardia:
+        if hr < self.bradycardia:
             if self.bradycardia_maybe:
                 information_passer.set_bradycardia_alarm()
                 self.write_log("bradycardia")
@@ -104,7 +106,7 @@ class HRProcessor:
         else:
             self.bradycardia_maybe = False
 
-        if hr > HRProcessor.tachycardia:
+        if hr > self.tachycardia:
             if self.tachycardia_maybe:
                 information_passer.set_tachycardia_alarm()
                 self.write_log("tachycardia")

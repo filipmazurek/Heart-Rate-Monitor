@@ -1,15 +1,18 @@
 import math
+from SignalChoice import *
 
 
 class BeatDetector:
 
-    def __init__(self, update_time_seconds):
+    def __init__(self, update_time_seconds, signal_chosen):
         """ Initialize the BeatDetector by setting a class instance variable so the detector knows how much time passes
         between updates so can correctly calculate bpm.
 
         :param update_time_seconds: time amount of data received at every call.
+        :param signal_chosen: to use ECG, PPG, or both to calculate heart rate
         """
         self.update_time_seconds = update_time_seconds
+        self.signal_chosen = signal_chosen
 
     def find_instant_hr(self, data_array_ecg, data_array_ppg):
         """ Given the data read from the binary file, finds the number of 'upbeats' and counts those as heartbeats
@@ -23,7 +26,15 @@ class BeatDetector:
         inst_ppg_hr = self. single_array_hr(data_array_ppg)
 
         instant_hr = self.reconcile_hr(inst_ecg_hr, inst_ppg_hr)
-        return instant_hr
+
+        if self.signal_chosen == SignalChoice.ecg:
+            return inst_ecg_hr
+
+        if self.signal_chosen == SignalChoice.ppg:
+            return inst_ppg_hr
+
+        if self.signal_chosen == SignalChoice.both:
+            return instant_hr
 
     def single_array_hr(self, data_array):
         """ A simplified function to find the bpm of a single array. Used for the repeated calls for each array.

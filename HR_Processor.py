@@ -10,6 +10,8 @@ class HRProcessor:
         many values should be stored in the queue for 1, 5, and 10 minutes.
 
         :param update_time_seconds:
+        :param tachycardia: give tachycardia threshold
+        :param bradycardia: give bradycardia threshold
         """
 
         self.tachycardia = tachycardia

@@ -2,6 +2,7 @@ from Reader import Reader
 from Beat_Detector import BeatDetector
 from HR_Processor import HRProcessor
 from tkinter import *
+from SignalChoice import *
 import time
 
 
@@ -19,6 +20,7 @@ class Main:
         self.data_filename = args.data_filename
         self.tachycardia = args.tachycardia
         self.bradycardia = args.bradycardia
+        self.signal_choice = args.signal_choice
 
         # user changable parameters
         self.update_time_seconds = 10  # read in this much data at a time
@@ -58,6 +60,13 @@ class Main:
                          type=float,
                          default='40.0')
 
+        par.add_argument('--signal_choice',
+                         dest='signal_choice',
+                         help='choose whether the heart rate is determined by the ECG, PPG, or both.'
+                              ' Input must be limited to SignalChoice.ecg, SignalChoice.ppg, or SignalChoice.both',
+                         type=SignalChoice,
+                         default=SignalChoice.both)
+
         args = par.parse_args()
 
         return args
@@ -69,7 +78,7 @@ class Main:
         Calls the method to destroy the display and finish running the script.
         """
         reader = Reader(self.data_filename, self.update_time_seconds, self.data_bit_length)
-        beat_detector = BeatDetector(self.update_time_seconds)
+        beat_detector = BeatDetector(self.update_time_seconds, self.signal_choice)
         processor_hr = HRProcessor(self.update_time_seconds, self.tachycardia, self.bradycardia)
 
         [data_array_ecg, data_array_ppg] = reader.get_next_data_instant()

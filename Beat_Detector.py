@@ -17,8 +17,8 @@ class BeatDetector:
     def find_instant_hr(self, data_array_ecg, data_array_ppg):
         """ Given the data read from the binary file, finds the number of 'upbeats' and counts those as heartbeats
 
-        :param data_array_ecg:
-        :param data_array_ppg:
+        :param data_array_ecg: array of ecg data
+        :param data_array_ppg: array of ppg data
         :return: calculated beats per minute
         """
 
@@ -39,7 +39,7 @@ class BeatDetector:
     def single_array_hr(self, data_array):
         """ A simplified function to find the bpm of a single array. Used for the repeated calls for each array.
 
-        :param data_array:
+        :param data_array: data array that should be of ecg or ppg data
         :return: beats per minute
         """
         num_beats = self.get_num_beats(data_array)
@@ -51,7 +51,7 @@ class BeatDetector:
     def get_num_beats(self, some_array):
         """ The actual calculation part of the class: counts how many upbeats occur in the given data.
 
-        :param some_array:
+        :param some_array: data array that should be of ecg or ppg data
         :return: beats per minute
         """
         num_beats = 0
@@ -70,8 +70,8 @@ class BeatDetector:
     def reconcile_hr(hr_one, hr_two):
         """ In case the ECG heart rate and PPG heart rate disagree, return the average of the two.
 
-        :param hr_one:
-        :param hr_two:
+        :param hr_one: one heart rate that disagrees with the second
+        :param hr_two: second heart rate that disagrees with the first
         :return: if close in value, return hr_one. If far, return the average of the two.
         """
         if abs(hr_one - hr_two) < 3:  # where 3 has been arbitrarily set as the 'close enough' limit
@@ -84,7 +84,7 @@ class BeatDetector:
     def safe_mean(array):
         """ Finds the mean of an array by ignoring any NaN values, just by skipping over them.
 
-        :param array:
+        :param array: array whose mean is to be found
         :return: mean that doesn't include NaN
         """
         total_items = 0
@@ -99,7 +99,7 @@ class BeatDetector:
     def find_next_value(array, item_num):
         """ Find the next value in the array that is not a NaN.
 
-        :param array:
+        :param array: array of values and NaNs
         :param item_num: where to start looking in the array
         :return:
         """

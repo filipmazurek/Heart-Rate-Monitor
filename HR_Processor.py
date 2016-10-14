@@ -9,11 +9,11 @@ class HRProcessor:
         """ Initialize an instance of the HRProcessor class with the time per given instant hr, so that can find how
         many values should be stored in the queue for 1, 5, and 10 minutes.
 
-        :param update_time_seconds:
+        :param update_time_seconds: number of seconds in each Reader data fetch
         :param tachycardia: give tachycardia threshold
         :param bradycardia: give bradycardia threshold
         :param multi_minute_mean_1: specify how big of a window to check for heart rate average
-        :param multi_minute_mean_2: same as above
+        :param multi_minute_mean_2: specify how big of a window to check for heart rate average
         """
 
         self.tachycardia = tachycardia
@@ -42,9 +42,9 @@ class HRProcessor:
     def add_inst_hr(self, inst_hr, time_passed_string):
         """ Add another instant heart rate to the queues. Check for alarms, too.
 
-        :param inst_hr:
+        :param inst_hr: heart rate found over the time update_time_seconds
         :param time_passed_string: current time, used for writing out log in case of alarm.
-        :return:
+        :return: class hr_information_passer which contains information about the state of the heart rate so far
         """
         self.time_passed_string = time_passed_string
         # self.one_min_queue = self.update_queue(self.one_min_queue, inst_hr)
@@ -75,9 +75,9 @@ class HRProcessor:
     def update_queue(queue, hr):
         """ Checks if the queue is full. If yes, remove an item before adding the new one.
 
-        :param queue:
-        :param hr:
-        :return:
+        :param queue: queue to be checked
+        :param hr: current calculated heart rate
+        :return: the same queue, but with the hr put into it
         """
         if queue.full():
             queue.get()
@@ -89,7 +89,7 @@ class HRProcessor:
     def queue_avg(queue):
         """ Finds the average of the entered queue. Uses a helper queue so that the method is not destructive.
 
-        :param queue:
+        :param queue: queue whose average is to be found
         :return: average value of the queue.
         """
         helper_queue = Queue()
@@ -116,7 +116,7 @@ class HRProcessor:
         true. Have a safety check in place: heart rate must be in alarm range for at least two consecutive instants
         before an alarm is raised.
 
-        :param hr:
+        :param hr: instant heart rate
         :param information_passer:
         :return:
         """
@@ -140,9 +140,9 @@ class HRProcessor:
 
     def write_log(self, type_alarm):
         """ In case of alarm, creates a new file and writes to it the instant heart rates from the last 10 minutes
-        for inspection by the user. The file is named based on when the alarm occured and what type of alarm it was.
+        for inspection by the user. The file is named based on when the alarm occurred and what type of alarm it was.
 
-        :param type_alarm:
+        :param type_alarm: whether the alarm is for tachycardia or bradycardia
         :return:
         """
         log_name = type_alarm + "_near_time_" + self.time_passed_string.get()

@@ -12,8 +12,11 @@ class Main:
     """ Initializer method for main. Creates the necessary parameters for other functions to access. Creates the
     StringVars that are later used to display data to the tkinter screen.
     """
-    def __init__(self, filename_new):
-        self.data_filename = filename_new
+    def __init__(self):
+
+        args = self.parse_arguments()
+
+        self.data_filename = args.data_filename
 
         # user changable parameters
         self.update_time_seconds = 10  # read in this much data at a time
@@ -27,6 +30,22 @@ class Main:
         self.five_min_hr_var = StringVar("")
         self.alarm_var = StringVar("")
         self.time_passed_string = StringVar("")
+
+    @staticmethod
+    def parse_arguments():
+        import argparse as ap
+
+        par = ap.ArgumentParser(description="heart rate monitor parameters",
+                                formatter_class=ap.ArgumentDefaultsHelpFormatter)
+
+        par.add_argument('--filename',
+                         dest='data_filename',
+                         help='filename of binary data',
+                         type=str,
+                         default='test.bin')
+        args = par.parse_args()
+
+        return args
 
     def run_hr_monitor(self):
         """ The heart of the program. This function runs the while loop that calls all other classes that are part of
@@ -113,6 +132,5 @@ class Main:
 
 
 if __name__ == "__main__":
-    filename = input("Please enter the binary file name: ")
-    myMain = Main(filename)
+    myMain = Main()
     myMain.setup_tkinter()

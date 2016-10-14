@@ -21,6 +21,8 @@ class Main:
         self.tachycardia = args.tachycardia
         self.bradycardia = args.bradycardia
         self.signal_choice = args.signal_choice
+        self.multi_min_avg_1 = args.multi_min_avg_1
+        self.multi_min_avg_2 = args.multi_min_avg_2
 
         # user changable parameters
         self.update_time_seconds = 10  # read in this much data at a time
@@ -46,7 +48,7 @@ class Main:
                          dest='data_filename',
                          help='filename of binary data',
                          type=str,
-                         default='test.bin')
+                         default='HRTester.bin')
 
         par.add_argument('--tachycardia',
                          dest='tachycardia',
@@ -67,6 +69,18 @@ class Main:
                          type=SignalChoice,
                          default=SignalChoice.both)
 
+        par.add_argument('--multi_min_avg_1',
+                         dest='multi_min_avg_1',
+                         help='number of minutes over which heart rate is averaged',
+                         type=float,
+                         default='1')
+
+        par.add_argument('--multi_min_avg_2',
+                         dest='multi_min_avg_2',
+                         help='number of minutes over which heart rate is averaged',
+                         type=float,
+                         default='5')
+
         args = par.parse_args()
 
         return args
@@ -79,7 +93,8 @@ class Main:
         """
         reader = Reader(self.data_filename, self.update_time_seconds, self.data_bit_length)
         beat_detector = BeatDetector(self.update_time_seconds, self.signal_choice)
-        processor_hr = HRProcessor(self.update_time_seconds, self.tachycardia, self.bradycardia)
+        processor_hr = HRProcessor(self.update_time_seconds, self.tachycardia, self.bradycardia, self.multi_min_avg_1,
+                                   self.multi_min_avg_2)
 
         [data_array_ecg, data_array_ppg] = reader.get_next_data_instant()
         while reader.still_reading():
@@ -132,9 +147,11 @@ class Main:
         """ Initializes all the labels that are going to be shown in the display. Opens up the display window itself
         by root.mainloop(), then begins the program after half a second (safety) using the .after() method.
         """
+
+
         Label(root, text="Instant HR: ").grid(row=0, column=0)
-        Label(root, text="One Min HR: ").grid(row=1, column=0)
-        Label(root, text="Five Min HR: ").grid(row=2, column=0)
+        Label(root, text=str(self.multi_min_avg_1) + " Min HR: ").grid(row=1, column=0)
+        Label(root, text=str(self.multi_min_avg_2) + " Min HR: ").grid(row=2, column=0)
         Label(root, text="Alarm: ").grid(row=3, column=0)
         Label(root, text="Time Passed: ").grid(row=4, column=0)
 

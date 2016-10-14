@@ -4,27 +4,40 @@ from tkinter import StringVar
 
 
 class HRProcessor:
-    tachycardia = 200  # selected values for tachycardia and bradycardia
-    bradycardia = 40
 
-    def __init__(self, update_time_seconds):
+    def __init__(self, update_time_seconds, tachycardia, bradycardia, multi_minute_mean_1, multi_minute_mean_2):
         """ Initialize an instance of the HRProcessor class with the time per given instant hr, so that can find how
         many values should be stored in the queue for 1, 5, and 10 minutes.
 
         :param update_time_seconds:
+        :param tachycardia: give tachycardia threshold
+        :param bradycardia: give bradycardia threshold
+        :param multi_minute_mean_1: specify how big of a window to check for heart rate average
+        :param multi_minute_mean_2: same as above
         """
+
+        self.tachycardia = tachycardia
+        self.bradycardia = bradycardia
+
         self.time_passed_string = StringVar("")
 
         self.tachycardia_maybe = False
         self.bradycardia_maybe = False
 
         samples_per_1_min = int(60 / update_time_seconds)
-        samples_per_5_min = samples_per_1_min * 5
+        # samples_per_5_min = samples_per_1_min * 5
         samples_per_10_min = samples_per_1_min * 10
 
-        self.one_min_queue = Queue(maxsize=samples_per_1_min)
-        self.five_min_queue = Queue(maxsize=samples_per_5_min)
+        # added features to allow any minute averages
+        samples_per_multi_1 = int(samples_per_1_min * multi_minute_mean_1)
+        samples_per_multi_2 = int(samples_per_1_min * multi_minute_mean_2)
+
+        # self.one_min_queue = Queue(maxsize=samples_per_1_min)
+        # self.five_min_queue = Queue(maxsize=samples_per_5_min)
         self.ten_min_queue = Queue(maxsize=samples_per_10_min)
+
+        self.multi_min_queue_1 = Queue(maxsize=samples_per_multi_1)
+        self.multi_min_queue_2 = Queue(maxsize=samples_per_multi_2)
 
     def add_inst_hr(self, inst_hr, time_passed_string):
         """ Add another instant heart rate to the queues. Check for alarms, too.
@@ -34,14 +47,25 @@ class HRProcessor:
         :return:
         """
         self.time_passed_string = time_passed_string
-        self.one_min_queue = self.update_queue(self.one_min_queue, inst_hr)
-        self.five_min_queue = self.update_queue(self.five_min_queue, inst_hr)
+        # self.one_min_queue = self.update_queue(self.one_min_queue, inst_hr)
+        # self.five_min_queue = self.update_queue(self.five_min_queue, inst_hr)
         self.ten_min_queue = self.update_queue(self.ten_min_queue, inst_hr)
 
-        one_min_hr = self.queue_avg(self.one_min_queue)
-        five_min_hr = self.queue_avg(self.five_min_queue)
+        # added features to allow any minute averages
+        self.multi_min_queue_1 = self.update_queue(self.multi_min_queue_1, inst_hr)
+        self.multi_min_queue_2 = self.update_queue(self.multi_min_queue_2, inst_hr)
 
-        hr_information_passer = InformationPasserClass(inst_hr, one_min_hr, five_min_hr)
+        # one_min_hr = self.queue_avg(self.one_min_queue)
+        # five_min_hr = self.queue_avg(self.five_min_queue)
+
+        # added features to allow any minute averages
+        multi_min_hr_1 = self.queue_avg(self.multi_min_queue_1)
+        multi_min_hr_2 = self.queue_avg(self.multi_min_queue_2)
+
+        # hr_information_passer = InformationPasserClass(inst_hr, one_min_hr, five_min_hr)
+
+        # added features to allow any minute averages
+        hr_information_passer = InformationPasserClass(inst_hr, multi_min_hr_1, multi_min_hr_2)
 
         hr_information_passer = self.check_for_alarm(inst_hr, hr_information_passer)
 
@@ -96,7 +120,7 @@ class HRProcessor:
         :param information_passer:
         :return:
         """
-        if hr < HRProcessor.bradycardia:
+        if hr < self.bradycardia:
             if self.bradycardia_maybe:
                 information_passer.set_bradycardia_alarm()
                 self.write_log("bradycardia")
@@ -104,7 +128,7 @@ class HRProcessor:
         else:
             self.bradycardia_maybe = False
 
-        if hr > HRProcessor.tachycardia:
+        if hr > self.tachycardia:
             if self.tachycardia_maybe:
                 information_passer.set_tachycardia_alarm()
                 self.write_log("tachycardia")

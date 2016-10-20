@@ -85,6 +85,7 @@ class Main:
 
         return args
 
+
     def run_hr_monitor(self):
         """ The heart of the program. This function runs the while loop that calls all other classes that are part of
         this assignment. It calls the classes that read the data in, find the instant heart rate, and find the average

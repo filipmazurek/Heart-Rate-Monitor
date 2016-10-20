@@ -12,18 +12,26 @@ class Reader:
         :param seconds_at_a_time: how many seconds worth of data will be returned when getting an instant worth of data
         :param data_bit_length: whether the multiplexed PPG and ECG values are 12 bit or 16 bit.
         """
-        default_fileName = "60bpm16uint.bin"
+
+        # check if file has a valid extension. If not, try to see if files with the valid extension exist
+        # if not (self.valid_file_extension(filename)):
+        #     try:
+
+
+
+        # default_fileName = "60bpm16uint.bin"
         self.data_bit_length = data_bit_length
         self.bytes_to_load = int(data_bit_length * 2 / 8)  # cast to integer because need integer when reading in
+        self.opened_file = open(filename, 'rb')
 
-        try:
-            self.opened_file = open(filename, 'rb')
-
-        except FileNotFoundError:
-            try:
-                print("File not found. Proceeding to read in the default HRTester.bin file.")
-                self.opened_file = open(default_fileName, 'rb')
-            except:
+        # try:
+        #     self.opened_file = open(filename, 'rb')
+        #
+        # except FileNotFoundError:
+        #     try:
+        #         print("File not found. Proceeding to read in the default HRTester.bin file.")
+        #         self.opened_file = open(default_fileName, 'rb')
+        #     except:
 
 
 
@@ -39,6 +47,13 @@ class Reader:
 
         self.num_samples_to_get = self.sample_rate_hz * seconds_at_a_time
 
+    @staticmethod
+    def valid_file_extension(filename):
+        import os.path
+
+        file_extension = os.path.splitext(filename)[1]  # split text returns array. Second item is extention
+
+        return (file_extension is '.bin') or (file_extension is '.mat')
 
     def get_next_data_instant(self):
         """ Read from the file the next seconds_at_a_time worth of data.

@@ -19,7 +19,7 @@ class HRProcessor:
         self.tachycardia = tachycardia
         self.bradycardia = bradycardia
 
-        self.time_passed_string = StringVar('')
+        self.time_passed_string = StringVar()
 
         self.tachycardia_maybe = False
         self.bradycardia_maybe = False
@@ -145,7 +145,7 @@ class HRProcessor:
         :param type_alarm: whether the alarm is for tachycardia or bradycardia
         :return:
         """
-        log_name = type_alarm + "_near_time_" + self.time_passed_string.get()
+        log_name = type_alarm + "_near_time_" + self.time_passed_string.get().replace(':', '-')
         new_file = open(log_name, 'w')
         helper_queue = Queue()
 

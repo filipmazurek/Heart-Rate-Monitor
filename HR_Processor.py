@@ -19,7 +19,7 @@ class HRProcessor:
         self.tachycardia = tachycardia
         self.bradycardia = bradycardia
 
-        self.time_passed_string = StringVar("")
+        self.time_passed_string = StringVar('')
 
         self.tachycardia_maybe = False
         self.bradycardia_maybe = False

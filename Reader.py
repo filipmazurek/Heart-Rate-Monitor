@@ -17,35 +17,70 @@ class Reader:
         # if not (self.valid_file_extension(filename)):
         #     try:
 
+        self.is_bin_file = False
+        self.is_mat_file = False
+        self.mat_index = 0
+        self.is_closed = False
 
+        import os.path
 
-        # default_fileName = "60bpm16uint.bin"
-        self.data_bit_length = data_bit_length
-        self.bytes_to_load = int(data_bit_length * 2 / 8)  # cast to integer because need integer when reading in
-        self.opened_file = open(filename, 'rb')
+        file_extension = os.path.splitext(filename)[1]  # split text returns array. Second item is extention
 
-        # try:
-        #     self.opened_file = open(filename, 'rb')
-        #
-        # except FileNotFoundError:
-        #     try:
-        #         print("File not found. Proceeding to read in the default HRTester.bin file.")
-        #         self.opened_file = open(default_fileName, 'rb')
-        #     except:
+        if file_extension == '.bin':
+            self.is_bin_file = True
 
+        if file_extension == '.mat':
+            self.is_mat_file = True
 
+        if self.is_bin_file:
 
-        self.sample_rate_hz = 0
+            # default_fileName = "60bpm16uint.bin"
+            self.data_bit_length = data_bit_length
+            self.bytes_to_load = int(data_bit_length * 2 / 8)  # cast to integer because need integer when reading in
+            self.opened_file = open(filename, 'rb')
 
-        if data_bit_length == 12:
-            binary_data = self.opened_file.read(3)
-            self.sample_rate_hz = struct.unpack('<I', binary_data + '\0')[0]  # trick for 24 bit numbers
-            # http://stackoverflow.com/questions/3783677/how-to-read-integers-from-a-file-that-are-24bit-and-little-endian-using-python
-        if data_bit_length == 16:
-            binary_data = self.opened_file.read(2)
-            self.sample_rate_hz = struct.unpack('<H', binary_data)[0]  # < means little endian; H is 16 int
+            # try:
+            #     self.opened_file = open(filename, 'rb')
+            #
+            # except FileNotFoundError:
+            #     try:
+            #         print("File not found. Proceeding to read in the default HRTester.bin file.")
+            #         self.opened_file = open(default_fileName, 'rb')
+            #     except:
+
+            self.sample_rate_hz = 0
+
+            if data_bit_length == 12:
+                binary_data = self.opened_file.read(3)
+                self.sample_rate_hz = struct.unpack('<I', binary_data + '\0')[0]  # trick for 24 bit numbers
+                # http://stackoverflow.com/questions/3783677/how-to-read-integers-from-a-file-that-are-24bit-and-little-endian-using-python
+            if data_bit_length == 16:
+                binary_data = self.opened_file.read(2)
+                self.sample_rate_hz = struct.unpack('<H', binary_data)[0]  # < means little endian; H is 16 int
+
+        if self.is_mat_file:
+            self.mat_dict = self.read_any_mat(filename)
+            self.sample_rate_hz = self.mat_dict.get('fs')[0][0]
 
         self.num_samples_to_get = self.sample_rate_hz * seconds_at_a_time
+
+    @staticmethod
+    def read_any_mat(infile):
+        """ reads in both Matlab v5 and v7.3 files
+
+        :param infile: input file (str)
+        :return: mat_dict
+        """
+        from scipy.io import loadmat
+        import h5py
+
+        try:
+            mat_file = loadmat(infile)
+        except NotImplementedError:
+            mat_file = h5py.File(infile)
+
+        mat_dict = dict(mat_file)
+        return mat_dict
 
     @staticmethod
     def valid_file_extension(filename):
@@ -53,7 +88,7 @@ class Reader:
 
         file_extension = os.path.splitext(filename)[1]  # split text returns array. Second item is extention
 
-        return (file_extension is '.bin') or (file_extension is '.mat')
+        return (file_extension == '.bin') or (file_extension == '.mat')
 
     def get_next_data_instant(self):
         """ Read from the file the next seconds_at_a_time worth of data.
@@ -67,7 +102,7 @@ class Reader:
         for numSample in range(0, self.num_samples_to_get):
             [ecg_data_point, ppg_data_point] = self.load_next_data_points()
 
-            if self.opened_file.closed:
+            if self.is_closed:
                 break
 
             data_array_ecg.append(ecg_data_point)
@@ -81,25 +116,36 @@ class Reader:
 
         :return: one of each ECG and PPG data points
         """
-        binary_data = self.opened_file.read(self.bytes_to_load)
-
-        if not binary_data:  # if EOF reached, close the file and exit.
-            self.opened_file.close()
-            return [None, None]
-
         ecg_data_point = None
         ppg_data_point = None
 
-        ecg_data_binary = binary_data[:int(self.bytes_to_load / 2)]
-        ppg_data_binary = binary_data[-int(self.bytes_to_load / 2):]
+        if self.is_bin_file:
+            binary_data = self.opened_file.read(self.bytes_to_load)
 
-        if self.data_bit_length == 16:
-            ecg_data_point = struct.unpack('<H', ecg_data_binary)[0]
-            ppg_data_point = struct.unpack('<H', ppg_data_binary)[0]
+            if not binary_data:  # if EOF reached, close the file and exit.
+                self.opened_file.close()
+                self.is_closed = True
+                return [None, None]
 
-        if self.data_bit_length == 12:
-            ecg_data_point = struct.unpack('<H', ecg_data_binary + '\0')[0]
-            ppg_data_point = struct.unpack('<H', ppg_data_binary + '\0')[0]
+            ecg_data_binary = binary_data[:int(self.bytes_to_load / 2)]
+            ppg_data_binary = binary_data[-int(self.bytes_to_load / 2):]
+
+            if self.data_bit_length == 16:
+                ecg_data_point = struct.unpack('<H', ecg_data_binary)[0]
+                ppg_data_point = struct.unpack('<H', ppg_data_binary)[0]
+
+            if self.data_bit_length == 12:
+                ecg_data_point = struct.unpack('<H', ecg_data_binary + '\0')[0]
+                ppg_data_point = struct.unpack('<H', ppg_data_binary + '\0')[0]
+
+        if self.is_mat_file:
+
+            try:
+                ecg_data_point = self.mat_dict.get('ecg')[0][self.mat_index]
+                ppg_data_point = self.mat_dict.get('ppg')[0][self.mat_index]
+                self.mat_index += 1
+            except IndexError:
+                self.is_closed = True
 
         return [ecg_data_point, ppg_data_point]
 
@@ -108,7 +154,7 @@ class Reader:
 
         :return: boolean
         """
-        return not self.opened_file.closed
+        return not self.is_closed
 
     def get_sample_rate(self):
         return self.sample_rate_hz

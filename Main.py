@@ -15,8 +15,7 @@ class Main:
     StringVars that are later used to display data to the tkinter screen.
     """
     def __init__(self):
-        logging.error('test')
-
+        logging.debug('Main initialized')
         args = self.parse_arguments()
 
         self.data_filename = args.data_filename
@@ -29,17 +28,19 @@ class Main:
 
         # user changable parameters
         self.update_time_seconds = 10  # read in this much data at a time
-        self.seconds_between_readings = 0  # time between display updates.
+        self.seconds_between_readings = 10  # time between display updates.
 
         # end user changable parameters
 
         if self.update_time_seconds <= 0:
             print('Someone is trying to break this... Setting to update every 10 seconds')
             self.update_time_seconds = 10
+            logging.error('Nonsensical update time corrected to default value = 10')
 
         if not((self.data_bit_length == 12) or (self.data_bit_length == 16)):
             print('This system supports reading only 12 or 16 bit numbers. Defaulting to 16')
             self.data_bit_length = 16
+            logging.error('Incorrect bit length corrected to default = 16')
 
         self.time_passed = 0
         self.inst_hr_var = StringVar("")
@@ -100,6 +101,14 @@ class Main:
 
         args = par.parse_args()
 
+        logging.debug('filename : %s', args.data_filename)
+        logging.debug('tachycardia threshold: %d', args.tachycardia)
+        logging.debug('bradycardia threshold: %d', args.bradycardia)
+        logging.debug('signal choice: %s', args.signal_choice)
+        logging.debug('multi_min_avg_1: %d', args.multi_min_avg_1)
+        logging.debug('multi_min_avg_2: %d', args.multi_min_avg_2)
+        logging.debug('binary_data_bits: %d', args.binary_data_bits)
+
         return args
 
     def run_hr_monitor(self):
@@ -135,8 +144,10 @@ class Main:
         self.five_min_hr_var.set(int(visualization_info.get_five_min_hr()))
         if visualization_info.get_bradycardia_alarm():
             self.alarm_var.set("Bradycardia!!")
+            logging.info('bradycardia alarm')
         elif visualization_info.get_tachycardia_alarm():
             self.alarm_var.set("Tachycardia!!")
+            logging.info('tachycardia alarm')
         else:
             self.alarm_var.set("")
 
@@ -193,10 +204,12 @@ class Main:
         """
         root.quit()
         root.destroy()
+        logging.debug('All done and cleaned up')
 
 
 if __name__ == "__main__":
     logging.getLogger('bme590assignment02')
     logging.basicConfig(filename='log/log.txt', format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+    logging.debug('Starting')
     myMain = Main()
     myMain.setup_tkinter()

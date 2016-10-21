@@ -15,6 +15,7 @@ class Main:
     StringVars that are later used to display data to the tkinter screen.
     """
     def __init__(self):
+        logging.error('test')
 
         args = self.parse_arguments()
 
@@ -28,7 +29,7 @@ class Main:
 
         # user changable parameters
         self.update_time_seconds = 10  # read in this much data at a time
-        self.seconds_between_readings = 1  # time between display updates.
+        self.seconds_between_readings = 0  # time between display updates.
 
         # end user changable parameters
 
@@ -144,6 +145,12 @@ class Main:
         h, m = divmod(m, 60)
         temp_time_string = "%d:%02d:%02d" % (h, m, s)
         self.time_passed_string.set(temp_time_string)
+
+        logging.info('instant HR: %d', visualization_info.get_inst_hr())
+        logging.info('%s Min HR: %d', str(self.multi_min_avg_1), visualization_info.get_one_min_hr())
+        logging.info('%s Min HR: %d', str(self.multi_min_avg_2), visualization_info.get_five_min_hr())
+        logging.info('time passed : %s', temp_time_string)
+        logging.info('')  #separator
 
         # uncomment the following lines for a console print
 

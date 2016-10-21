@@ -4,7 +4,7 @@ import sys
 
 class Reader:
 
-    def __init__(self, filename, seconds_at_a_time=20, data_bit_length=16):  # default values given
+    def __init__(self, filename, seconds_at_a_time=10, data_bit_length=16):  # default values given
         """ Initialize the Reader class. Calculate class variables based on data_bit_length for functions to know how
         much to read from the given document at a time. Sets the opened document as a class variable so it may be
         read from in later function calls.
@@ -14,9 +14,9 @@ class Reader:
         :param data_bit_length: whether the multiplexed PPG and ECG values are 12 bit or 16 bit.
         """
 
-        # check if file has a valid extension. If not, try to see if files with the valid extension exist
-        # if not (self.valid_file_extension(filename)):
-        #     try:
+        if seconds_at_a_time <= 0:
+            print('Someone is trying to break this... Setting to update every 10 seconds')
+            seconds_at_a_time = 10
 
         self.is_bin_file = False
         self.is_mat_file = False

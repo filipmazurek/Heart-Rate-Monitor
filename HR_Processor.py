@@ -24,7 +24,13 @@ class HRProcessor:
         self.tachycardia_maybe = False
         self.bradycardia_maybe = False
 
-        samples_per_1_min = int(60 / update_time_seconds)
+        try:
+            samples_per_1_min = int(60 / update_time_seconds)
+        except ZeroDivisionError:
+            print('Someone is trying to break this... Setting to update every 10 seconds')
+            update_time_seconds = 10
+            samples_per_1_min = int(60 / update_time_seconds)
+
         # samples_per_5_min = samples_per_1_min * 5
         samples_per_10_min = samples_per_1_min * 10
 
@@ -100,8 +106,11 @@ class HRProcessor:
             queue_total += temp_val
             queue_size += 1
             helper_queue.put(temp_val)
-
-        queue_avg = queue_total / queue_size
+        try:
+            queue_avg = queue_total / queue_size
+        except ZeroDivisionError:
+            print("Queue size is zero. Returning default 0")
+            queue_avg = 0
 
         while not helper_queue.empty():
             temp_val = helper_queue.get()

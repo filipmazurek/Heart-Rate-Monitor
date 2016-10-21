@@ -44,7 +44,12 @@ class BeatDetector:
         """
         num_beats = self.get_num_beats(data_array)
 
-        bpm = num_beats / (self.update_time_seconds / 60)  # 60 seconds in a minute
+        try:
+            bpm = num_beats / (self.update_time_seconds / 60)  # 60 seconds in a minute
+        except ZeroDivisionError:
+            print('Someone is trying to break this... Setting to update every 10 seconds')
+            self.update_time_seconds = 10
+            bpm = num_beats / (self.update_time_seconds / 60)  # 60 seconds in a minute
 
         return bpm
 

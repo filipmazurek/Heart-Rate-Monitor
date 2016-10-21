@@ -23,12 +23,21 @@ class Main:
         self.signal_choice = args.signal_choice
         self.multi_min_avg_1 = args.multi_min_avg_1
         self.multi_min_avg_2 = args.multi_min_avg_2
+        self.data_bit_length = args.binary_data_bits
 
         # user changable parameters
         self.update_time_seconds = 10  # read in this much data at a time
         self.seconds_between_readings = 1  # time between display updates.
-        self.data_bit_length = 16  # length of each information point. Can be 12 or 16
+
         # end user changable parameters
+
+        if self.update_time_seconds <= 0:
+            print('Someone is trying to break this... Setting to update every 10 seconds')
+            self.update_time_seconds = 10
+
+        if not(self.data_bit_length == 12) or not(self.data_bit_length == 16):
+            print('This system supports reading only 12 or 16 bit numbers. Defaulting to 16')
+            self.data_bit_length = 16
 
         self.time_passed = 0
         self.inst_hr_var = StringVar("")
@@ -80,6 +89,12 @@ class Main:
                          help='number of minutes over which heart rate is averaged',
                          type=float,
                          default='5')
+
+        par.add_argument('--binary_data_bits',
+                         dest='binary_data_bits',
+                         help='bits per data point in file. Must be either 12 or 16',
+                         type=int,
+                         default='16')
 
         args = par.parse_args()
 

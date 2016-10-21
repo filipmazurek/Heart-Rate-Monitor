@@ -1,4 +1,5 @@
 import struct
+import sys
 
 
 class Reader:
@@ -32,21 +33,19 @@ class Reader:
         if file_extension == '.mat':
             self.is_mat_file = True
 
+        if (not self.is_mat_file) and (not self.is_bin_file):
+            sys.exit('Please enter a file with a valid extension')
+
         if self.is_bin_file:
 
-            # default_fileName = "60bpm16uint.bin"
             self.data_bit_length = data_bit_length
             self.bytes_to_load = int(data_bit_length * 2 / 8)  # cast to integer because need integer when reading in
             self.opened_file = open(filename, 'rb')
 
-            # try:
-            #     self.opened_file = open(filename, 'rb')
-            #
-            # except FileNotFoundError:
-            #     try:
-            #         print("File not found. Proceeding to read in the default HRTester.bin file.")
-            #         self.opened_file = open(default_fileName, 'rb')
-            #     except:
+            try:
+                self.opened_file = open(filename, 'rb')
+            except FileNotFoundError:
+                    print("File not found.")
 
             self.sample_rate_hz = 0
 

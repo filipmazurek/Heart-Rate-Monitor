@@ -1,6 +1,7 @@
 from queue import *
 from Information_Passer import InformationPasserClass
 from tkinter import StringVar
+import logging
 
 
 class HRProcessor:
@@ -15,6 +16,8 @@ class HRProcessor:
         :param multi_minute_mean_1: specify how big of a window to check for heart rate average
         :param multi_minute_mean_2: specify how big of a window to check for heart rate average
         """
+        logging.getLogger('bme590assignment02')
+        logging.debug('HRProcessor initialized')
 
         self.tachycardia = tachycardia
         self.bradycardia = bradycardia
@@ -30,6 +33,7 @@ class HRProcessor:
             print('Someone is trying to break this... Setting to update every 10 seconds')
             update_time_seconds = 10
             samples_per_1_min = int(60 / update_time_seconds)
+            logging.error('Nonsensical update time corrected to default value = 10')
 
         # samples_per_5_min = samples_per_1_min * 5
         samples_per_10_min = samples_per_1_min * 10
@@ -37,6 +41,10 @@ class HRProcessor:
         # added features to allow any minute averages
         samples_per_multi_1 = int(samples_per_1_min * multi_minute_mean_1)
         samples_per_multi_2 = int(samples_per_1_min * multi_minute_mean_2)
+
+        logging.debug('there will be %d samples per minute', samples_per_1_min)
+        logging.debug('there will be %d samples per multi min avg 1', samples_per_multi_1)
+        logging.debug('there will be %d samples per multi min avg 2', samples_per_multi_2)
 
         # self.one_min_queue = Queue(maxsize=samples_per_1_min)
         # self.five_min_queue = Queue(maxsize=samples_per_5_min)
@@ -154,6 +162,7 @@ class HRProcessor:
         :param type_alarm: whether the alarm is for tachycardia or bradycardia
         :return:
         """
+        logging.debug('there was an alarm and a log is being written for inspection later')
         log_name = type_alarm + "_near_time_" + self.time_passed_string.get().replace(':', '-')
         new_file = open(log_name, 'w')
         helper_queue = Queue()

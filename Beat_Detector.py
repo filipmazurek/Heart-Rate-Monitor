@@ -1,5 +1,6 @@
 import math
 from SignalChoice import *
+import logging
 
 
 class BeatDetector:
@@ -11,6 +12,9 @@ class BeatDetector:
         :param update_time_seconds: time amount of data received at every call.
         :param signal_chosen: to use ECG, PPG, or both to calculate heart rate
         """
+        logging.getLogger('bme590assignment02')
+        logging.debug('BeatDetector initialized')
+
         self.update_time_seconds = update_time_seconds
         self.signal_chosen = signal_chosen
 
@@ -21,6 +25,7 @@ class BeatDetector:
         :param data_array_ppg: array of ppg data
         :return: calculated beats per minute
         """
+        logging.debug('finding instant hr')
 
         inst_ecg_hr = self.single_array_hr(data_array_ecg)
         inst_ppg_hr = self. single_array_hr(data_array_ppg)
@@ -28,12 +33,15 @@ class BeatDetector:
         instant_hr = self.reconcile_hr(inst_ecg_hr, inst_ppg_hr)
 
         if self.signal_chosen == SignalChoice.ecg:
+            logging.debug('and only looking at ecg data')
             return inst_ecg_hr
 
         if self.signal_chosen == SignalChoice.ppg:
+            logging.debug('and only looking at ppg data')
             return inst_ppg_hr
 
         if self.signal_chosen == SignalChoice.both:
+            logging.debug('and looking at both data')
             return instant_hr
 
     def single_array_hr(self, data_array):
@@ -50,6 +58,7 @@ class BeatDetector:
             print('Someone is trying to break this... Setting to update every 10 seconds')
             self.update_time_seconds = 10
             bpm = num_beats / (self.update_time_seconds / 60)  # 60 seconds in a minute
+            logging.error('Nonsensical update time corrected to default value = 10')
 
         return bpm
 
@@ -79,6 +88,7 @@ class BeatDetector:
         :param hr_two: second heart rate that disagrees with the first
         :return: if close in value, return hr_one. If far, return the average of the two.
         """
+        logging.debug('when calculating both, the heart rates disagreed')
         if abs(hr_one - hr_two) < 3:  # where 3 has been arbitrarily set as the 'close enough' limit
             return hr_one
 

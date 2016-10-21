@@ -161,7 +161,7 @@ class Main:
         logging.info('%s Min HR: %d', str(self.multi_min_avg_1), visualization_info.get_one_min_hr())
         logging.info('%s Min HR: %d', str(self.multi_min_avg_2), visualization_info.get_five_min_hr())
         logging.info('time passed : %s', temp_time_string)
-        logging.info('')  #separator
+        logging.info('')  # separator
 
         # uncomment the following lines for a console print
 
@@ -181,7 +181,6 @@ class Main:
         """ Initializes all the labels that are going to be shown in the display. Opens up the display window itself
         by root.mainloop(), then begins the program after half a second (safety) using the .after() method.
         """
-
 
         Label(root, text="Instant HR: ").grid(row=0, column=0)
         Label(root, text=str(self.multi_min_avg_1) + " Min HR: ").grid(row=1, column=0)

@@ -1,5 +1,6 @@
 import math
 from SignalChoice import *
+import logging
 
 
 class BeatDetector:
@@ -11,6 +12,8 @@ class BeatDetector:
         :param update_time_seconds: time amount of data received at every call.
         :param signal_chosen: to use ECG, PPG, or both to calculate heart rate
         """
+        logging.getLogger('bme590assignment02')
+
         self.update_time_seconds = update_time_seconds
         self.signal_chosen = signal_chosen
 

@@ -1,5 +1,6 @@
 import struct
 import sys
+import logging
 
 
 class Reader:
@@ -13,6 +14,7 @@ class Reader:
         :param seconds_at_a_time: how many seconds worth of data will be returned when getting an instant worth of data
         :param data_bit_length: whether the multiplexed PPG and ECG values are 12 bit or 16 bit.
         """
+        logging.getLogger('bme590assignment02')
 
         if seconds_at_a_time <= 0:
             print('Someone is trying to break this... Setting to update every 10 seconds')

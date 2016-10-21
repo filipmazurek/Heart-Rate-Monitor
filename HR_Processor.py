@@ -1,6 +1,7 @@
 from queue import *
 from Information_Passer import InformationPasserClass
 from tkinter import StringVar
+import logging
 
 
 class HRProcessor:
@@ -15,6 +16,7 @@ class HRProcessor:
         :param multi_minute_mean_1: specify how big of a window to check for heart rate average
         :param multi_minute_mean_2: specify how big of a window to check for heart rate average
         """
+        logging.getLogger('bme590assignment02')
 
         self.tachycardia = tachycardia
         self.bradycardia = bradycardia

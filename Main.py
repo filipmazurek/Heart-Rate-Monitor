@@ -4,6 +4,7 @@ from HR_Processor import HRProcessor
 from tkinter import *
 from SignalChoice import *
 import time
+import logging
 
 
 root = Tk()  # global root in this case. Only way I know tkinter for now...
@@ -35,7 +36,7 @@ class Main:
             print('Someone is trying to break this... Setting to update every 10 seconds')
             self.update_time_seconds = 10
 
-        if not(self.data_bit_length == 12) or not(self.data_bit_length == 16):
+        if not((self.data_bit_length == 12) or (self.data_bit_length == 16)):
             print('This system supports reading only 12 or 16 bit numbers. Defaulting to 16')
             self.data_bit_length = 16
 
@@ -188,5 +189,7 @@ class Main:
 
 
 if __name__ == "__main__":
+    logging.getLogger('bme590assignment02')
+    logging.basicConfig(filename='log/log.txt', format='%(asctime)s %(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
     myMain = Main()
     myMain.setup_tkinter()

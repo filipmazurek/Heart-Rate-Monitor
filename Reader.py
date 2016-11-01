@@ -70,6 +70,7 @@ class Reader:
         if self.is_mat_file:
             self.mat_dict = self.read_any_mat(filename)
             self.sample_rate_hz = self.mat_dict.get('fs')[0][0]
+            print(type(self.sample_rate_hz))
 
         self.num_samples_to_get = self.sample_rate_hz * seconds_at_a_time
 
@@ -158,6 +159,8 @@ class Reader:
                 self.mat_index += 1
             except IndexError:
                 self.is_closed = True
+            except TypeError:
+                print('data from Matlab file is not unint16')
 
         return [ecg_data_point, ppg_data_point]
 

@@ -28,7 +28,7 @@ class Main:
 
         # user changable parameters
         self.update_time_seconds = 10  # read in this much data at a time
-        self.seconds_between_readings = 10  # time between display updates.
+        self.seconds_between_readings = 1  # time between display updates.
 
         # end user changable parameters
 
@@ -77,7 +77,7 @@ class Main:
         par.add_argument('--signal_choice',
                          dest='signal_choice',
                          help='choose whether the heart rate is determined by the ECG, PPG, or both.'
-                              ' Input must be limited to SignalChoice.ecg, SignalChoice.ppg, or SignalChoice.both',
+                              ' Input must be limited to ECG, PPG, or both',
                          type=SignalChoice,
                          default=SignalChoice.both)
 

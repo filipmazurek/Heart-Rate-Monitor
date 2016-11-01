@@ -5,6 +5,6 @@ class SignalChoice(Enum):
     """
     Enumeration to limit responses of which signal to use to calculate heart rate
     """
-    ecg = 'ECG'
-    ppg = 'PPG'
-    both = 'ECG and PPG'
+    ecg = 'ecg'
+    ppg = 'ppg'
+    both = 'both'
